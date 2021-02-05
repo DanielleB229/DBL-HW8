@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tables Page</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+  </head>
+
+  <body>
+    <div class="page-header">
+        <h2 class="teamHeader"><small>My Team</small></h2>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="card-columns" id="employeeTable">
+        
+        </div>
+          <!-- Current Tables in Use -->
+          
+      </div>
+    </div>
+  </body>
+
+  <!-- BELOW CODE IS CRITICAL. IT HANDLES HOW FORM DATA IS LOADED FROM OUR SERVER -->
+  <script type="text/javascript">
+    // We then dynamically display this content in our table. This is very similar to the group projects you just completed.
+    // It's also very similar to the NYT search application.
+
+    const buildListItemGithub = (content) => {
+      const githubId = document.createElement('li');
+      
+      const githubLink =document.createElement('a');
+      githubLink.href = `https://github.com/${content}`
+      githubLink.textContent = content;
+
+      const githubLabel = document.createElement('p');
+      githubLabel.textContent = "GitHub: ";
+      const githubDiv = document.createElement('div');
+      githubDiv.classList.add('d-flex');
+      githubDiv.appendChild(githubLabel);
+      githubDiv.appendChild(githubLink);
+      githubId.appendChild(githubDiv)
+      githubId.classList.add('list-group-item');
+      return githubId;
+    }
+    
+    const buildListItemSchool = (label, content) => {
+      const githubId = document.createElement('li');
+      
+      const githubLink =document.createElement('p');
+      githubLink.textContent = content;
+
+      const githubLabel = document.createElement('p');
+      githubLabel.textContent = `${label}: `;
+      const githubDiv = document.createElement('div');
+      githubDiv.classList.add('d-flex');
+      githubDiv.appendChild(githubLabel);
+      githubDiv.appendChild(githubLink);
+      githubId.appendChild(githubDiv)
+      githubId.classList.add('list-group-item');
+      return githubId;
+    }
+    
+    const runTableQuery = () => {
+      // Fetch function GET the data associated with it (initially set to localhost)
+      fetch('/api/tables', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => {
+            console.log(response);
+            return response;
+        })
+        .then((response) => response.json())
+        .then((tableData) => {
+          console.log('tableData', tableData);
+          console.log('------------------------------------');
+
+          for (let i = 0; i < tableData.length; i++) {
+            // Get a reference to the tableList element and populate it with tables
+            const employeeList = document.getElementById('employeeTable');
+            let card = document.createElement('div');
+            card.classList.add('card');
+
+            let cardHeader = document.createElement('div');
+            cardHeader.classList.add('card-header');
+
+            let header = document.createElement('h4');
+            header.textContent = `${tableData[i].name}`;
+            let icon = document.createElement('i');
+            icon.classList.add('fa');
+            icon.classList.add('fa-coffee');
+            icon.classList.add('iconStyle')
+            let title = document.createElement('p');
+            title.textContent = `${tableData[i].role}`;
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.classList.add('d-flex')
+            titleDiv.appendChild(icon);
+            titleDiv.appendChild(title);
+
+            let cardBody = document.createElement('div')
+            cardBody.classList.add('card-body');
+
+            let list = document.createElement('ul');
+            list.classList.add('list-group');
+
+            const employeeId = document.createElement('li');
+            employeeId.textContent = `ID: ${tableData[i].id}`;
+            employeeId.classList.add('list-group-item');
+            const email = document.createElement('li');
+
+            const addressMailTo =document.createElement('a');
+            addressMailTo.href = `mailto:${tableData[i].email}`
+            addressMailTo.textContent = tableData[i].email;
+            
+            const emailLabel = document.createElement('p');
+            emailLabel.textContent = "Email: ";
+            const emailDiv = document.createElement('div');
+            emailDiv.classList.add('d-flex');
+            emailDiv.appendChild(emailLabel);
+            emailDiv.appendChild(addressMailTo);
+            email.appendChild(emailDiv)
+            email.classList.add('list-group-item');
+
+          
+            list.appendChild(employeeId);
+            list.appendChild(email);
+            if(tableData[i].role === 'Engineer') {
+              list.appendChild(buildListItemGithub(tableData[i].github));
+            } else if (tableData[i].role === 'Intern') {
+              list.appendChild(buildListItemSchool('School', tableData[i].school));
+            } else {
+              list.appendChild(buildListItemSchool('Office number', tableData[i].officeNumber));
+
+            }
+            cardBody.appendChild(list);
+            cardHeader.appendChild(header);
+            cardHeader.appendChild(titleDiv);
+            card.appendChild(cardHeader);
+            card.appendChild(cardBody);
+           
+            employeeList.appendChild(card);
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    };
+
+
+    // Run Queries!
+    // ==========================================
+    runTableQuery();
+  </script>
+</html>
