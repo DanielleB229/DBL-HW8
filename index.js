@@ -16,7 +16,7 @@ require('./src/routes/htmlRoutes')(app);
 
 var inquirer = require('inquirer');
 
-console.log('Hi, welcome to Node Pizza');
+console.log('Welcome to Team Builder!');
 
 var output = [];
 
